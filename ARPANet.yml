@@ -1,0 +1,233 @@
+hosts:
+    h1 :
+         interfaces:
+               ip: 192.0.0.1/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from h1'"
+               fg: True
+             # e0
+             - cmd: "sudo arp -v -i h1-eth1 -s 192.0.0.1 02:00:00:42:82:67"
+               fg: True
+             - cmd: "sudo route add default h1-eth1"
+               fg: True
+             # h2
+             - cmd: "sudo arp -v -i h2-eth1 -s 192.0.0.2 02:00:00:c8:4d:7a"
+             # h3
+             - cmd: "sudo arp -v -i h3-eth1 -s 192.0.0.3 02:00:00:c8:4d:7a"
+             # h4
+             - cmd: "sudo arp -v -i h4-eth1 -s 192.0.0.4 02:00:00:c8:4d:7a"
+    h2 :
+         interfaces:
+               ip: 192.0.0.2/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from h2'"
+               fg: True
+             # e0
+             - cmd: "sudo arp -v -i h2-eth1 -s 192.0.0.2 02:00:00:42:82:67"
+               fg: True
+             - cmd: "sudo route add default h2-eth1"
+               fg: True
+             # h1
+             - cmd: "sudo arp -v -i h1-eth1 -s 192.0.0.1 02:00:00:c8:4d:7a"
+             # h3
+             - cmd: "sudo arp -v -i h3-eth1 -s 192.0.0.3 02:00:00:c8:4d:7a"
+             # h4
+             - cmd: "sudo arp -v -i h4-eth1 -s 192.0.0.4 02:00:00:c8:4d:7a"
+    h3 :
+         interfaces:
+               ip: 192.0.0.2/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from h3'"
+               fg: True
+             # e0
+             - cmd: "sudo arp -v -i h3-eth1 -s 192.0.0.2 02:00:00:42:82:67"
+               fg: True
+             - cmd: "sudo route add default h3-eth1"
+               fg: True
+             # h1
+             - cmd: "sudo arp -v -i h1-eth1 -s 192.0.0.1 02:00:00:c8:4d:7a"
+             # h2
+             - cmd: "sudo arp -v -i h2-eth1 -s 192.0.0.2 02:00:00:c8:4d:7a"
+             # h4
+             - cmd: "sudo arp -v -i h4-eth1 -s 192.0.0.4 02:00:00:c8:4d:7a"
+
+    h4 :
+         interfaces:
+               ip: 192.0.0.4/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from h4'"
+               fg: True
+             # e0
+             - cmd: "sudo arp -v -i h4-eth1 -s 192.0.0.2 02:00:00:42:82:67"
+               fg: True
+             - cmd: "sudo route add default h4-eth1"
+               fg: True
+             # h1
+             - cmd: "sudo arp -v -i h1-eth1 -s 192.0.0.1 02:00:00:c8:4d:7a"
+             # h2
+             - cmd: "sudo arp -v -i h2-eth1 -s 192.0.0.2 02:00:00:c8:4d:7a"
+             # h3
+             - cmd: "sudo arp -v -i h3-eth1 -s 192.0.0.3 02:00:00:c8:4d:7a"
+switches:
+   UCLA :
+         cfg: ../../build/BMv2/networks/ALV/ALV.json
+         interfaces:
+             - link: h1
+               # ip: 192.0.0.1
+               mac: '02:00:00:42:82:67'
+               port: 1
+             - link: h2
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+               link: h3
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 3
+               link: h4
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+         cmds:
+             # Switching
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 1
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 2
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 3
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 4
+             # ARP
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.1 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.4 => 02:00:00:c8:4d:7a
+             # Routing
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 1 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 2 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 3 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 4 0
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+
+    UCSB :
+         cfg: ../../build/BMv2/networks/ALV/ALV.json
+         interfaces:
+             - link: h1
+               # ip: 192.0.0.1
+               mac: '02:00:00:42:82:67'
+               port: 1
+             - link: h2
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+               link: h3
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 3
+               link: h4
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+         cmds:
+             # Switching
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 1
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 2
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 3
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 4
+             # ARP
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.1 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.4 => 02:00:00:c8:4d:7a
+             # Routing
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 1 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 2 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 3 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 4 0
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+
+    SRI :
+         cfg: ../../build/BMv2/networks/ALV/ALV.json
+         interfaces:
+             - link: h1
+               # ip: 192.0.0.1
+               mac: '02:00:00:42:82:67'
+               port: 1
+             - link: h2
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 3
+               link: h3
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+               link: h4
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 4
+         cmds:
+             # Switching
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 1
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 2
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 3
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 4
+             # ARP
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.1 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.4 => 02:00:00:c8:4d:7a
+             # Routing
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 1 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 2 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 3 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 4 0
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+    Utah :
+         cfg: ../../build/BMv2/networks/ALV/ALV.json
+         interfaces:
+             - link: h1
+               # ip: 192.0.0.1
+               mac: '02:00:00:42:82:67'
+               port: 2
+             - link: h2
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+               link: h3
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 2
+               link: h4
+               # ip: 192.0.0.1
+               mac: '02:00:00:95:e8:81'
+               port: 1
+         cmds:
+             # Switching
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 1
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 2
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:d8:c2:6b => 3
+             - table_add mac_forwarding mac_forward_set_egress 02:00:00:c8:4d:7a => 4
+             # ARP
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.1 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.4 => 02:00:00:c8:4d:7a
+             # Routing
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 1 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 2 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000002&&&0xFFFFFFFF => 192.0.0.2 3 0
+             - table_add ipv4_forwarding ipv4_forward 0xC0000003&&&0xFFFFFFFF => 192.0.0.3 4 0
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.2 => 02:00:00:d8:c2:6b
+             - table_add next_hop_arp_lookup arp_lookup_set_addresses 192.0.0.3 => 02:00:00:c8:4d:7a
