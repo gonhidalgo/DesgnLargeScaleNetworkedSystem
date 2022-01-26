@@ -12,7 +12,7 @@ hosts:
              - cmd: "sudo route add default h1-eth1"
                fg: True
              # h2
-             - cmd: "sudo arp -v -i h2-eth1 -s 192.0.0.2 02:00:00:c8:4d:7a"
+             - cmd: "sudo arp -v -i h2-eth1 -s 192.0.0.2 02:00:00:c8:4d:7b"
              # h3
              - cmd: "sudo arp -v -i h3-eth1 -s 192.0.0.3 02:00:00:c8:4d:7a"
              # h4
