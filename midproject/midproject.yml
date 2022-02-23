@@ -1,0 +1,106 @@
+hosts:
+    client :
+         interfaces:
+             - mac: '00:00:00:00:00:01'
+               ip: 10.0.0.1/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from Client'"
+               fg: True
+             # LB
+             - cmd: "sudo arp -v -i client-eth1 -s 10.0.0.2 22:22:22:22:22:02"
+               fg: True
+             - cmd: "sudo route add default client-eth1"
+               fg: True
+             # Server1
+             - cmd: "sudo arp -v -i client-eth1 -s 10.0.1.1 11:11:11:11:11:11"
+             # Server2
+             - cmd: "sudo arp -v -i client-eth1 -s 10.0.2.1 11:11:11:11:11:12"
+             # Server3
+             - cmd: "sudo arp -v -i client-eth1 -s 10.0.3.1 11:11:11:11:11:13"
+
+    s1 :
+         interfaces:
+             - mac: '11:11:11:11:11:11'
+               ip: 10.0.1.1/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from Server1'"
+               fg: True
+             # LB
+             - cmd: "sudo arp -v -i s1-eth1 -s 10.0.1.3 22:22:22:22:22:03"
+               fg: True
+             - cmd: "sudo route add default s1-eth1"
+               fg: True
+             # Server2
+             - cmd: "sudo arp -v -i s1-eth1 -s 10.0.2.1 11:11:11:11:11:12"
+             # Server3
+             - cmd: "sudo arp -v -i s1-eth1 -s 10.0.3.1 11:11:11:11:11:13"
+             # Client
+             - cmd: "sudo arp -v -i s1-eth1 -s 10.0.0.1 00:00:00:00:00:01"
+
+    s2 :
+         interfaces:
+             - mac: '11:11:11:11:11:12'
+               ip: 10.0.2.1/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from Server 2'"
+               fg: True
+             # LB
+             - cmd: "sudo arp -v -i s2-eth1 -s 10.0.2.4 22:22:22:22:22:04"
+               fg: True
+             - cmd: "sudo route add default s2-eth1"
+               fg: True
+             # Server1
+             - cmd: "sudo arp -v -i s2-eth1 -s 10.0.1.1 11:11:11:11:11:11"
+             # Server3
+             - cmd: "sudo arp -v -i s2-eth1 -s 10.0.3.1 11:11:11:11:11:13"
+             # Client
+             - cmd: "sudo arp -v -i s2-eth1 -s 10.0.0.1 00:00:00:00:00:01"
+
+    s3 :
+         interfaces:
+             - mac: '11:11:11:11:11:13'
+               ip: 10.0.3.1/24
+               port: 1
+         programs:
+             - cmd: "echo 'Hello from Server3'"
+               fg: True
+             # LB
+             - cmd: "sudo arp -v -i s3-eth1 -s 10.0.3.1 22:22:22:22:22:01"
+               fg: True
+             - cmd: "sudo route add default s3-eth1"
+               fg: True
+             # Server1
+             - cmd: "sudo arp -v -i s3-eth1 -s 10.0.1.1 11:11:11:11:11:11"
+             # Server2
+             - cmd: "sudo arp -v -i s3-eth1 -s 10.0.2.1 11:11:11:11:11:12"
+             # Client
+             - cmd: "sudo arp -v -i s3-eth1 -s 10.0.0.1 00:00:00:00:00:01"
+switches:
+   LB :
+         cfg: ../../build/BMv2/networks/midproject/midproject.json
+         interfaces:
+             - link: client
+               mac: '22:22:22:22:22:02'
+               port: 2
+             - link: s1
+               mac: '22:22:22:22:22:03'
+               port: 3
+             - link: s2
+               mac: '22:22:22:22:22:04'
+               port: 4
+             - link: s3
+               mac: '22:22:22:22:22:01'
+               port: 1
+         cmds:
+             # Switching
+             - table_add ipv4_lpm ipv4_forward 10.0.0.1/32 => 00:00:00:00:00:01 2
+             - table_add ipv4_lpm ipv4_forward 10.0.1.1/32 => 11:11:11:11:11:11 3
+             - table_add ipv4_lpm ipv4_forward 10.0.2.1/32 => 11:11:11:11:11:12 4
+             - table_add ipv4_lpm ipv4_forward 10.0.3.1/32 => 11:11:11:11:11:13 1
+             - table_add glb_exact glb_forward 1 => 3 10.0.1.1
+             - table_add glb_exact glb_forward 2 => 4 10.0.2.1
+             - table_add glb_exact glb_forward 3 => 1 10.0.3.1
+
