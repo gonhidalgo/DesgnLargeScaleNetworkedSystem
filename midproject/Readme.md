@@ -7,14 +7,21 @@ Therefore, a client will be the one sending traffic to the backends. The switch 
 
 ## Getting Started 
 * Since Hangar tends to minimality---and to using a console rather than a GUI---the `xterm` command in Mininet does not work. Instead of `mininet> xterm h1 h2` do the following:
-        1. `mininet> client create_screen 'client'` # Note that the single quotes are essential, otherwise Mininet will expand "client". \n
-        2. `mininet> s1 create_screen 's1'` \n
-        3. `mininet> s2 create_screen 's2'` \n
-        4. `mininet> s3 create_screen 's3'` \n
+
+        1. `mininet> client create_screen 'client'` # Note that the single quotes are essential, otherwise Mininet will expand "client". 
+
+        2. `mininet> s1 create_screen 's1'` 
+
+        3. `mininet> s2 create_screen 's2'` 
+
+        4. `mininet> s3 create_screen 's3'` 
+
         5. `$ attach_screen client` # This will present you with a shell running on client. Note that this command is run from the command shell in Hangar, which you can get by opening another ssh session or using a screen multiplexor.
+
         4. `$ attach_screen s1` # This command, run from a fresh command shell, will present a shell on s1.
            `$ attach_screen s2` # This command, run from a fresh command shell, will present a shell on s2.
            `s$ attach_screen s3` # This command, run from a fresh command shell, will present a shell on s3.
+
 * `receive.py` and `send.py` scripts have been created to send packets to the backends that will be forwarded to s1, s2 and s3 according to the `ncon` value of the packet.
         - Run `./receive.py`in s1, s2 and s3 to get the servers listening to their eth1.
         - Run `./send.py`in client to send packets from the client to the load balancer.
