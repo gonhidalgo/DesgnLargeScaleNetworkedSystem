@@ -36,20 +36,20 @@ After running both send and receive scripts, the results would be the following.
 
 ![clientpacket1](images/clientpacket1.png "clientpacket1")
 
-![clientpacket2](images/clientpacket1.png "clientpacket2")
+![clientpacket2](images/clientpacket2.png "clientpacket2")
 
-![clientpacket3](images/clientpacket1.png "clientpacket3")
+![clientpacket3](images/clientpacket3.png "clientpacket3")
 
 2. Each server will receive one packet. Check the destination IP addresses and how the LB has changed its values to forward the traffic.
 
 ### Server 1 output
 
-![serverpacket1](images/clientpacket1.png "serverpacket1")
+![serverpacket1](images/serverpacket1.png "serverpacket1")
 
 ### Server 2 output
 
-![serverpacket2](images/clientpacket1.png "serverpacket2")
+![serverpacket2](images/serverpacket2.png "serverpacket2")
 
 ### Server 3 output
 
-![serverpacket3](images/clientpacket1.png "serverpacket3")
+![serverpacket3](images/serverpacket3.png "serverpacket3")
