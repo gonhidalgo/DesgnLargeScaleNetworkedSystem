@@ -26,3 +26,30 @@ Therefore, a client will be the one sending traffic to the backends. The switch 
         - Run `./receive.py`in s1, s2 and s3 to get the servers listening to their eth1.
         - Run `./send.py`in client to send packets from the client to the load balancer.
         - The packets will be sent to the Load Balancer, and the LB will be able to change IP addresses and ports to forward the traffic.
+
+## Output
+After running both send and receive scripts, the results would be the following. 
+
+1. The client would see the protocol stack of each packet sent:
+
+### Client output
+
+![clientpacket1](images/clientpacket1.png "clientpacket1")
+
+![clientpacket2](images/clientpacket1.png "clientpacket2")
+
+![clientpacket3](images/clientpacket1.png "clientpacket3")
+
+2. Each server will receive one packet. Check the destination IP addresses and how the LB has changed its values to forward the traffic.
+
+### Server 1 output
+
+![serverpacket1](images/clientpacket1.png "serverpacket1")
+
+### Server 2 output
+
+![serverpacket2](images/clientpacket1.png "serverpacket2")
+
+### Server 3 output
+
+![serverpacket3](images/clientpacket1.png "serverpacket3")
