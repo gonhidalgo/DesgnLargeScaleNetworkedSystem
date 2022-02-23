@@ -7,10 +7,10 @@ Therefore, a client will be the one sending traffic to the backends. The switch 
 
 ## Getting Started 
 * Since Hangar tends to minimality---and to using a console rather than a GUI---the `xterm` command in Mininet does not work. Instead of `mininet> xterm h1 h2` do the following:
-        1. `mininet> client create_screen 'client'` # Note that the single quotes are essential, otherwise Mininet will expand "client".
-        2. `mininet> s1 create_screen 's1'`
-        3. `mininet> s2 create_screen 's2'`
-        4. `mininet> s3 create_screen 's3'`
+        1. `mininet> client create_screen 'client'` # Note that the single quotes are essential, otherwise Mininet will expand "client". \n
+        2. `mininet> s1 create_screen 's1'` \n
+        3. `mininet> s2 create_screen 's2'` \n
+        4. `mininet> s3 create_screen 's3'` \n
         5. `$ attach_screen client` # This will present you with a shell running on client. Note that this command is run from the command shell in Hangar, which you can get by opening another ssh session or using a screen multiplexor.
         4. `$ attach_screen s1` # This command, run from a fresh command shell, will present a shell on s1.
            `$ attach_screen s2` # This command, run from a fresh command shell, will present a shell on s2.
