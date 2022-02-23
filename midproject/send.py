@@ -17,16 +17,16 @@ iface = 'client-eth1'
 def main():
 
 #This script creates 3 packets with diferent ncon values to be sent to the backends
-#    pkt = Ether(dst='ff:ff:ff:ff:ff:ff')
-    pkt1 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=1)/ Raw(RandString(size=26))
+#I chose to fill the packet with random strings
+
+    pkt1 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=1)/ Raw(RandString(size=26))  
     pkt2 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=2)/ Raw(RandString(size=26))
     pkt3 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=3)/ Raw(RandString(size=26))
-#    len(pkt)
+#Show protocol stack
     pkt1.show()
     pkt2.show()
     pkt3.show()
-#    hexdump(pkt)
-#    print "len(pkt) = ", len(pkt)
+#Send packets
     sendp(pkt1, iface=iface)
     sendp(pkt2, iface=iface)
     sendp(pkt3, iface=iface)

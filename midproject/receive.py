@@ -11,6 +11,7 @@ from scapy.all import IP, TCP, UDP, Raw
 from scapy.layers.inet import _IPOption_HDR
 from GLB_header import GLB
 
+#Detect the interface listening
 def get_if(host_iface):
     ifs=get_if_list()
     iface=None # "h1-eth0"
