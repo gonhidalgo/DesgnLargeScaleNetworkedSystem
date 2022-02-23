@@ -18,9 +18,9 @@ def main():
 
 #This script creates 3 packets with diferent ncon values to be sent to the backends
 #    pkt = Ether(dst='ff:ff:ff:ff:ff:ff')
-    pkt1 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=4)/ Raw(RandString(size=26))
-    pkt2 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=5)/ Raw(RandString(size=26))
-    pkt3 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=6)/ Raw(RandString(size=26))
+    pkt1 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=1)/ Raw(RandString(size=26))
+    pkt2 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=2)/ Raw(RandString(size=26))
+    pkt3 =  Ether () / IP(dst='10.0.0.2') /  GLB(ncon=3)/ Raw(RandString(size=26))
 #    len(pkt)
     pkt1.show()
     pkt2.show()
